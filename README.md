@@ -16,6 +16,13 @@ variables built into your shell. For example:
     0
     $
 
+NOTE! In order to get the above behavior, you need to have `.` as one of the
+entries in your `$PATH` (which has some security implications). To do this:
+
+    $ export PATH=$PATH:.
+
+If `.` isn't on your `$PATH`, you'll need to prefix each variable with `./`.
+
 ## Supported operators
 
 Initialized construction:
