@@ -3,8 +3,8 @@
 # Licensed under the terms of the MIT source code license
 
 print "usage: $0 name [= value] or $0 name [name ...]\n" and exit unless @ARGV;
-exit not many_name_case if @ARGV < 2 || $ARGV[1] eq '='
-exit not single_name_case
+exit not many_name_case if @ARGV < 2 || $ARGV[1] eq '=';
+exit not single_name_case;
 
 sub create_var {die "variable $_[0] already exists" if stat $_[0];
                 open my $fh, '>', $_[0] && print $fh join '', <DATA>
