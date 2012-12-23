@@ -58,3 +58,17 @@ Comparison:
     $ foo == bar || echo 'different'
     different
     $
+
+Composition:
+
+    $ var foo = 1
+    $ var bar = 2
+    $ var bif = 3
+    $ foo + bar + bif
+    1
+    2
+    3
+    $
+
+When you use variables this way, all operators are right-associative but the
+variable values themselves are retrieved from leftmost to rightmost.
