@@ -1,0 +1,53 @@
+# Bash variable
+
+A Bash variable stores a value, but in a much more powerful way than the
+variables built into your shell. For example:
+
+    $ var foo
+    $ foo = uptime
+    10:37:16 up 28 days, 21:00,  0 users,  load average: 0.15, 0.43, 0.40
+    $ foo
+    10:37:16 up 28 days, 21:00,  0 users,  load average: 0.15, 0.43, 0.40
+    $ foo += cat /proc/loadavg
+    10:37:16 up 28 days, 21:00,  0 users,  load average: 0.15, 0.43, 0.40
+    0.13 0.37 0.38 2/180 25274
+    $ foo =
+    $ foo | wc -c
+    0
+    $
+
+## Supported operators
+
+Initialized construction:
+
+    $ var foo = echo hi
+    hi
+    $ foo
+    hi
+    $
+
+Reassignment, appends, and concatenation:
+
+    $ foo + echo there
+    hi
+    there
+    $ foo
+    hi
+    $ foo += echo there
+    hi
+    there
+    $ foo
+    hi
+    there
+    $
+
+Comparison:
+
+    $ var bar = foo
+    $ foo == bar && echo 'same'
+    same
+    $ bar = echo 5
+    5
+    $ foo == bar || echo 'different'
+    different
+    $

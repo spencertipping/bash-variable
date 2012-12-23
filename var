@@ -1,0 +1,32 @@
+#!/usr/bin/perl
+# Bash variable generator | Spencer Tipping
+# Licensed under the terms of the MIT source code license
+
+print "usage: $0 name [= value] or $0 name [name ...]\n" and exit unless @ARGV;
+exit not many_name_case if @ARGV < 2 || $ARGV[1] eq '='
+exit not single_name_case
+
+sub create_var {die "variable $_[0] already exists" if stat $_[0];
+                open my $fh, '>', $_[0] && print $fh join '', <DATA>
+                                        && close $fh}
+
+sub many_name_case   {create_var $_ for @ARGV}
+sub single_name_case {create_var shift @ARGV; sh("./$ARGV[0] @ARGV")}
+
+__DATA__
+#!/usr/bin/perl
+$_code = <<'_';
+$_data = join '', <DATA>;
+
+*{'='}  = sub {print $_data = qx|@ARGV|};
+*{'=='} = sub {exit $_data eq qx|@ARGV|};
+*{'+='} = sub {print $_data .= qx|@ARGV|};
+
+&{shift @ARGV}();
+
+open my $fh, '>', $0;
+print $fh "#!/usr/bin/perl\n\$_code = <<'_';\n${_code}_\neval\$_code;\n__DATA__\n$_data";
+close $fh;
+_
+eval$_code;
+__DATA__
