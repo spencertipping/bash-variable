@@ -2,31 +2,34 @@
 # Bash variable generator | Spencer Tipping
 # Licensed under the terms of the MIT source code license
 
-print "usage: $0 name [= value] or $0 name [name ...]\n" and exit unless @ARGV;
-exit not many_name_case if @ARGV < 2 || $ARGV[1] eq '=';
-exit not single_name_case;
-
-sub create_var {die "variable $_[0] already exists" if stat $_[0];
-                open my $fh, '>', $_[0] && print $fh join '', <DATA>
-                                        && close $fh}
-
-sub many_name_case   {create_var $_ for @ARGV}
-sub single_name_case {create_var shift @ARGV; sh("./$ARGV[0] @ARGV")}
-
-__DATA__
+$var = <<'eof';
 #!/usr/bin/perl
 $_code = <<'_';
 $_data = join '', <DATA>;
 
 *{'='}  = sub {print $_data = qx|@ARGV|};
-*{'=='} = sub {exit $_data eq qx|@ARGV|};
+*{'+'}  = sub {print $_data; system(@ARGV)};
+*{'=='} = sub {$_data eq qx|@ARGV| ? exit 0 : exit 1};
 *{'+='} = sub {print $_data .= qx|@ARGV|};
 
-&{shift @ARGV}();
+@ARGV ? &{shift @ARGV}() : print $_data;
 
 open my $fh, '>', $0;
 print $fh "#!/usr/bin/perl\n\$_code = <<'_';\n${_code}_\neval\$_code;\n__DATA__\n$_data";
 close $fh;
 _
 eval$_code;
-__DATA__
+eof
+
+sub create_var {die "variable $_[0] already exists" if stat $_[0];
+                open(my $fh, '>', $_[0]) or return 0;
+                print $fh $var and close $fh and chmod 0700, $_[0]}
+
+sub many_name_case   {create_var $_ for @ARGV}
+sub single_name_case {my ($name, @args) = @ARGV;
+                      create_var $name;
+                      shift @args and system("./$name = @args") if @args}
+
+print "usage: $0 name [= value] or $0 name [name ...]\n" and exit unless @ARGV;
+many_name_case,   exit 0 unless $ARGV[1] eq '=';
+single_name_case, exit 0;
